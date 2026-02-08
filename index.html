@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LiveDB Demo</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+         background: #0d1117; color: #c9d1d9; padding: 24px; max-width: 1200px; margin: 0 auto; }
+  h1 { color: #58a6ff; margin-bottom: 4px; }
+  .subtitle { color: #8b949e; margin-bottom: 24px; font-size: 14px; }
+  .section { margin-bottom: 28px; }
+  .section-title { font-size: 13px; font-weight: 600; text-transform: uppercase;
+                   letter-spacing: 1px; color: #8b949e; margin-bottom: 10px;
+                   padding-bottom: 6px; border-bottom: 1px solid #21262d; }
+  .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 10px; }
+  .card { background: #161b22; border: 1px solid #30363d; border-radius: 8px;
+          padding: 14px; cursor: pointer; transition: border-color 0.15s; }
+  .card:hover { border-color: #58a6ff; }
+  .card.success { border-color: #3fb950; }
+  .card.error { border-color: #f85149; }
+  .method { font-size: 11px; font-weight: 700; padding: 2px 6px; border-radius: 4px;
+            display: inline-block; margin-right: 6px; }
+  .method.get { background: #1f6feb22; color: #58a6ff; }
+  .method.post { background: #3fb95022; color: #3fb950; }
+  .ep { font-family: 'SF Mono', Consolas, monospace; font-size: 13px; font-weight: 600; }
+  .desc { color: #8b949e; font-size: 12px; margin-top: 6px; line-height: 1.5; }
+  .badge { font-size: 10px; padding: 2px 7px; border-radius: 10px; margin-left: 6px; }
+  .badge.read { background: #1f6feb22; color: #58a6ff; }
+  .badge.good { background: #3fb95022; color: #3fb950; }
+  .badge.bad { background: #f8514922; color: #f85149; }
+  .badge.warn { background: #d2992222; color: #d29922; }
+  .result { margin-top: 10px; font-size: 11px; font-family: 'SF Mono', Consolas, monospace;
+            background: #0d1117; border-radius: 4px; padding: 10px;
+            max-height: 220px; overflow-y: auto; white-space: pre-wrap;
+            display: none; border: 1px solid #21262d; line-height: 1.4; }
+  .result.visible { display: block; }
+  .topbar { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 28px; }
+  .reset-btn { background: #21262d; color: #c9d1d9; border: 1px solid #30363d;
+               padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 12px; }
+  .reset-btn:hover { background: #30363d; }
+  .info { background: #161b22; border: 1px solid #30363d; border-radius: 8px;
+          padding: 14px; margin-bottom: 24px; font-size: 13px; line-height: 1.6; color: #8b949e; }
+  .info code { background: #0d1117; padding: 2px 6px; border-radius: 3px; color: #c9d1d9; font-size: 12px; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div>
+    <h1>LiveDB Demo</h1>
+    <p class="subtitle">SQLAlchemy writes + LiveDB reads &mdash; click any endpoint to call it</p>
+  </div>
+  <button class="reset-btn" onclick="callApi('/api/reset','POST',this.parentElement)">Reset DB</button>
+</div>
+
+<div class="info">
+  <strong style="color:#c9d1d9">How this works:</strong>
+  <strong style="color:#58a6ff">LiveDB</strong> reads from SQLite via DuckDB's scanner.
+  <strong style="color:#3fb950">SQLAlchemy</strong> writes to SQLite directly.
+  Two separate connections to the same database &mdash; no conflicts.<br>
+  Open <code>app.py</code> and <code>write_routes.py</code> in VS Code to see LiveDB previews on the <code>db.*</code> lines.
+</div>
+
+<div class="section">
+  <div class="section-title">Read Endpoints &mdash; LiveDB Previews Work</div>
+  <div class="cards">
+    <div class="card" onclick="callApi('/api/users?min_age=18&status=active&limit=10','GET',this)">
+      <div><span class="method get">GET</span><span class="ep">/api/users</span>
+        <span class="badge read">param defaults</span></div>
+      <div class="desc">Active users aged 18+. Variables resolved from function parameter defaults.</div>
+      <div class="result"></div>
+    </div>
+    <div class="card" onclick="callApi('/api/users/1','GET',this)">
+      <div><span class="method get">GET</span><span class="ep">/api/users/1</span>
+        <span class="badge read">param default</span></div>
+      <div class="desc">Single user lookup. <code>user_id: int = 1</code> → Alice Smith.</div>
+      <div class="result"></div>
+    </div>
+    <div class="card" onclick="callApi('/api/orders?min_total=50&max_total=500','GET',this)">
+      <div><span class="method get">GET</span><span class="ep">/api/orders</span>
+        <span class="badge read">param defaults</span></div>
+      <div class="desc">Orders in $50–$500 range. Both bounds from function defaults.</div>
+      <div class="result"></div>
+    </div>
+    <div class="card" onclick="callApi('/api/users/1/orders','GET',this)">
+      <div><span class="method get">GET</span><span class="ep">/api/users/1/orders</span>
+        <span class="badge read">param default</span></div>
+      <div class="desc">Alice's orders: Laptop ($999) + Mouse ($29).</div>
+      <div class="result"></div>
+    </div>
+    <div class="card" onclick="callApi('/api/orders/premium','GET',this)">
+      <div><span class="method get">GET</span><span class="ep">/api/orders/premium</span>
+        <span class="badge read">computed</span></div>
+      <div class="desc">Orders ≥ $200. <code>PREMIUM_THRESHOLD = BASE_PRICE * 4</code> computed by AST.</div>
+      <div class="result"></div>
+    </div>
+    <div class="card" onclick="callApi('/api/dashboard?user_id=1&period=2026','GET',this)">
+      <div><span class="method get">GET</span><span class="ep">/api/dashboard</span>
+        <span class="badge read">@preview</span></div>
+      <div class="desc">Dynamic values from request, resolved via <code># @preview: 1</code> annotations.</div>
+      <div class="result"></div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-title">Write Endpoints &mdash; Code Time vs Run Time</div>
+  <div class="cards">
+    <div class="card" onclick="callApi('/api/orders/create?user_id=1&product=Widget&total=59.99','POST',this)">
+      <div><span class="method post">POST</span><span class="ep">/api/orders/create</span>
+        <span class="badge good">reads first ✓</span></div>
+      <div class="desc"><strong>GOOD pattern.</strong> Reads user via LiveDB first, then writes order via SQLAlchemy.
+        LiveDB preview shows existing data. Click multiple times to see order count grow.</div>
+      <div class="result"></div>
+    </div>
+    <div class="card" onclick="callApi('/api/users/3/deactivate','POST',this)">
+      <div><span class="method post">POST</span><span class="ep">/api/users/3/deactivate</span>
+        <span class="badge bad">write before read</span></div>
+      <div class="desc"><strong>BAD pattern.</strong> SQLAlchemy deactivates user, then LiveDB reads.
+        At <em>code time</em>, preview shows OLD status. At <em>run time</em>, shows "inactive" because
+        write was committed first.</div>
+      <div class="result"></div>
+    </div>
+    <div class="card" onclick="callApi('/api/users/3/deactivate-broken','POST',this)">
+      <div><span class="method post">POST</span><span class="ep">/api/users/3/deactivate-broken</span>
+        <span class="badge warn">uncommitted</span></div>
+      <div class="desc"><strong>WORST pattern.</strong> SQLAlchemy writes but never commits.
+        LiveDB sees stale data in <em>both</em> contexts. This is how DB isolation works &mdash;
+        uncommitted changes are invisible to other connections.</div>
+      <div class="result"></div>
+    </div>
+    <div class="card" onclick="callApi('/api/users/3/activate','POST',this)">
+      <div><span class="method post">POST</span><span class="ep">/api/users/3/activate</span>
+        <span class="badge good">fix ✓</span></div>
+      <div class="desc">Reactivate user 3 (undo deactivate). Commits first, then LiveDB reads updated status.</div>
+      <div class="result"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+async function callApi(url, method, card) {
+  const el = card.querySelector('.result');
+  card.className = 'card'; el.className = 'result visible'; el.textContent = 'Loading...';
+  try {
+    const r = await fetch(url, { method });
+    const d = await r.json();
+    card.className = 'card ' + (d.error ? 'error' : 'success');
+    el.textContent = JSON.stringify(d, null, 2);
+  } catch (e) { card.className = 'card error'; el.textContent = 'Error: ' + e.message; }
+}
+</script>
+</body>
+</html>
