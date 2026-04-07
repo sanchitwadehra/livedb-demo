@@ -1,6 +1,6 @@
 # LiveDB Demo
 
-A FastAPI app to try [LiveDB](https://github.com/sanchitwadehra/LiveDB) — open in VS Code, move your cursor through the code, see real data from the database. No need to run the app.
+Demo FastAPI app for [LiveDB](https://github.com/sanchitwadehra/LiveDB) — open in VS Code, browse the code, see real data without running the app.
 
 ![LiveDB Preview](assets/preview.png)
 
