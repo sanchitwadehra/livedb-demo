@@ -4,7 +4,7 @@ A FastAPI app demonstrating [LiveDB](https://github.com/sanchitwadehra/LiveDB) �
 
 ![LiveDB Preview](assets/preview.png)
 
-Open any file, place your cursor on a `db.*` line, and see the query results instantly.
+Open any file, place your cursor on a LiveDB expression, and see the query results instantly.
 
 ## Quick Start
 
@@ -16,7 +16,7 @@ pip install -r requirements.txt
 python seed_db.py
 ```
 
-**See previews:** Open the folder in VS Code (with the LiveDB extension installed), then open `app.py` and place your cursor on any `db.*` line.
+**See previews:** Open the folder in VS Code (with the LiveDB extension installed), then open `app.py` and place your cursor on any LiveDB expression.
 
 **Run the API:** `uvicorn app:app --reload` → open http://localhost:8000
 
@@ -24,7 +24,7 @@ python seed_db.py
 
 | File | Purpose |
 |------|---------|
-| `app.py` | FastAPI read endpoints using LiveDB — previews work on all `db.*` lines |
+| `app.py` | FastAPI read endpoints using LiveDB — previews work on all LiveDB expressions |
 | `write_routes.py` | SQLAlchemy write endpoints — demonstrates code-time vs run-time behavior |
 | `models.py` | SQLAlchemy models (User, Order) |
 | `seed_db.py` | Seeds the SQLite database with sample data |
