@@ -1,6 +1,8 @@
 # LiveDB Demo
 
-A FastAPI app demonstrating [LiveDB](https://marketplace.visualstudio.com/items?itemName=sanchitwadehra.livedb-vscode) — real-time database previews in VS Code.
+A FastAPI app demonstrating [LiveDB](https://github.com/sanchitwadehra/LiveDB) — real-time database previews in VS Code.
+
+![LiveDB Preview](assets/preview.png)
 
 Open any file, place your cursor on a `db.*` line, and see the query results instantly.
 
