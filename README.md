@@ -2,6 +2,8 @@
 
 Demo FastAPI app for [LiveDB](https://github.com/sanchitwadehra/LiveDB) — open in VS Code, browse the code, see real data without running the app.
 
+> **Note:** This is the companion demo for the LiveDB proof-of-concept. Install the [LiveDB extension](https://marketplace.visualstudio.com/items?itemName=sanchitwadehra.livedb-vscode) to see it in action.
+
 ![LiveDB Preview](assets/preview.png)
 
 Open any file, place your cursor on a LiveDB expression, and see the query results instantly.
